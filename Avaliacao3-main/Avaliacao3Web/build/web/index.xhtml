@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <h:form>
+        <nav style="width: 100%; text-align: right; font-size: 18px;  background: darkgrey;">
+            <h:commandLink action="login.xhtml" rendered="#{not usuarioBean.logado}" >
+                <h:outputText value="Faça seu login" />
+            </h:commandLink>
+            <h:commandLink action="admin/index.xhtml" rendered="#{usuarioBean.logado}">
+                <h:outputText value="Painel admin"/>
+            </h:commandLink>
+            <h:outputText value="Olá #{usuarioBean.nomedoUsuario}"  rendered="#{usuarioBean.logado}"/>
+            
+            <h:commandLink action="#{usuarioBean.logout()}" rendered="#{usuarioBean.logado}">
+                <h:outputText value="Sair"/>
+            </h:commandLink>
+            
+        </nav >
+        </h:form>
+        <h1>Consultas Agendadas Até Agora</h1>
+        <p:dataTable id="resultadosConsultas" rows="10" rowsPerPageTemplate="1,10,15" paginator="true" paginatorPosition="bottom" value="#{gerenciadorConsultasBean.consultasAgendadas}" var="consul">
+            <p:column headerText="Especialidade">
+                <h:outputText value="#{consul.idMedico.idEspec.descricao}"/>
+            </p:column>                
+            <p:column headerText="Médico">
+                <h:outputText value="#{consul.idMedico.nome}"/>
+            </p:column>
+            <p:column headerText="Paciente">
+                <h:outputText value="#{consul.nomePaciente}"/>
+            </p:column>
+            <p:column headerText="Telefone">
+                <h:outputText value="#{consul.telefonePaciente}"/>
+            </p:column>            
+            <p:column headerText="Data Hora">
+                <h:outputText value="#{consul.dataHora}">
+                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                </h:outputText>
+            </p:column>
+        </p:dataTable>
+    </h:body>
+</html>
+

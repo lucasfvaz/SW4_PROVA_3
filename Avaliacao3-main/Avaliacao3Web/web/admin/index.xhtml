@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Agendamentos</title>
+    </h:head>
+    <h:body>
+        <h:form >
+        <div style="width: 100%; text-align: right; background:beige;">
+            <h:commandLink action="/faces/index.xhtml" rendered="#{usuarioBean.logado}">
+                <h:outputText value="Inicio"/>
+            </h:commandLink>
+                <h:outputText value="Olá #{usuarioBean.nomedoUsuario}"  rendered="#{usuarioBean.logado}"/>
+            <h:commandLink action="#{usuarioBean.logout()}" rendered="#{usuarioBean.logado}">
+                <h:outputText value="Sair"/>
+            </h:commandLink>
+            </div>
+        </h:form>
+        <h1>Marcação de Consulta</h1>
+        <h:form >
+            
+            <p:column>
+                <p:outputLabel><strong>Especialidade:</strong></p:outputLabel>
+                <p:selectOneMenu value="#{medicoBean.especialidadeSelecionada}"
+                                 converter="#{EspecialidadeConverter}" requiredMessage="Faltou selecionar uma Especialidade" required="true">
+                    <f:selectItems value="#{consultaBean.especialidadesAsItems}"/>
+                     <p:ajax event="change" immediate="true" update="especialidadeMedicos"/>
+                </p:selectOneMenu>
+            </p:column>
+            <br/>
+            <p:column><br/>
+                <p:outputLabel><strong>Médicos:</strong></p:outputLabel>
+                <p:selectOneMenu id="especialidadeMedicos"
+                                 value="#{medicoBean.medicoSelecionado}"
+                                 converter="#{MedicoConverter}" requiredMessage="Faltou selecionar um Médico" required="true">
+                    <f:selectItems value="#{medicoBean.medicosEspeAsItems}"/>
+                    <p:ajax event="change" immediate="true" update=":resultadosConsultas"/>
+                </p:selectOneMenu>
+
+            </p:column><br/>
+            <br/>
+            <p:column>
+                <p:outputLabel><strong>Nome do Paciente:</strong></p:outputLabel>
+                <p:inputText value="#{gerenciadorConsultasBean.nomePaciente}" requiredMessage="Faltou prencher o nome do Paciente" required="true"/>
+                
+                <br/><br/>
+                <p:outputLabel><strong>Telefone do Paciente:</strong></p:outputLabel>
+                <p:inputMask mask="(99)99999-9999" value="#{gerenciadorConsultasBean.telefonePaciente}" requiredMessage="Faltou prencher o telefone de contato" required="true"/>
+                <br/><br/>
+                <p:outputLabel><strong>Data:</strong></p:outputLabel>
+                <p:calendar value="#{gerenciadorConsultasBean.dataHora}"
+                            id="vendorStartDateInputTxt"
+                            pattern="dd/MM/yyyy HH:mm"
+                            mode="popup"
+                            requiredMessage="Faltou preencher a Data"
+                            required="true"
+                            validatorMessage="Data Inválida. A data selecionada deve ser maior ou igual à data atual"
+                            validator="#{gerenciadorConsultasBean.validateData}"
+                           >
+                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy HH:mm" />
+                </p:calendar>
+            </p:column>
+            <br></br>
+            <br/>
+            <p:commandButton value="Agendar" 
+                             async="true"
+                             update=":resultadosConsultas"  action="#{gerenciadorConsultasBean.confirmarConsulta()}"/>
+             <p:growl showDetail="true" showSummary="true" autoUpdate="true"/>
+        </h:form>
+        <br></br>
+        
+        <p:dataTable id="resultadosConsultas" rows="10" rowsPerPageTemplate="1,10,15" paginator="true" paginatorPosition="bottom" value="#{gerenciadorConsultasBean.consultasPormedico}" var="consul">
+            <p:column headerText="Especialidade">
+                <h:outputText value="#{consul.idMedico.idEspec.descricao}"/>
+            </p:column>                
+            <p:column headerText="Médico">
+                <h:outputText value="#{consul.idMedico.nome}"/>
+            </p:column>
+            <p:column headerText="Paciente">
+                <h:outputText value="#{consul.nomePaciente}"/>
+            </p:column>
+            <p:column headerText="Telefone">
+                <h:outputText value="#{consul.telefonePaciente}"/>
+            </p:column>            
+            <p:column headerText="Data Hora">
+                <h:outputText value="#{consul.dataHora}">
+                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Cancelar consulta">
+                <h:form >
+                     <p:commandButton value="Cancelar" 
+                                      update=":resultadosConsultas"  action="#{gerenciadorConsultasBean.cancelarConsulta(consul)}"/>
+                </h:form>
+            </p:column>
+        </p:dataTable>
+        
+        
+        
+
+    </h:body>
+</html>
+
